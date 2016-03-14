@@ -1,0 +1,12 @@
+{
+    "name": "marco-c/WP_Serve_File",
+    "description": "Class to serve dynamic files in WordPress with performance in mind.",
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Marco Castelluccio",
+            "email": "mcastelluccio@mozilla.com"
+        }
+    ],
+    "require": {}
+}
