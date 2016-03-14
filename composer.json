@@ -1,5 +1,5 @@
 {
-    "name": "marco-c/WP_Serve_File",
+    "name": "marco-c/wp_serve_file",
     "description": "Class to serve dynamic files in WordPress with performance in mind.",
     "license": "GPLv2",
     "authors": [
