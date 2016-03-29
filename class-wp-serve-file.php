@@ -86,6 +86,11 @@ class WP_Serve_File {
     header('ETag: ' . $etag);
     header('Pragma: cache');
     header('Content-Type: ' . $contentType);
+    if (is_array($file['headers'])) {
+        foreach ($file['headers'] as $header => $content) {
+            header("$header: $content");
+        }
+    }
     echo $content;
     wp_die();
   }
