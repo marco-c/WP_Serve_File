@@ -8,5 +8,10 @@
             "email": "mcastelluccio@mozilla.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4" : {
+            "Mozilla\\" : ""
+        }
+    }
 }

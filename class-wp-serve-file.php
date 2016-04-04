@@ -1,5 +1,7 @@
 <?php
 
+namespace Mozilla;
+
 if (!class_exists('WP_Serve_File')) {
 
 class WP_Serve_File {
