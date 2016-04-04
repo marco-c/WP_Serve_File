@@ -46,8 +46,8 @@ class WP_Serve_File {
       $upload_dir = wp_upload_dir();
       $dir = trailingslashit($upload_dir['basedir']) . 'wpservefile_files/';
 
-      $wp_filesystem->mkdir($dir, FS_CHMOD_DIR);
-      $wp_filesystem->put_contents($dir . $name, $file['content'], FS_CHMOD_FILE);
+      $wp_filesystem->mkdir($dir);
+      $wp_filesystem->put_contents($dir . $name, $file['content']);
     } else {
       set_transient('wpservefile_files_' . $name, $file, YEAR_IN_SECONDS);
     }
