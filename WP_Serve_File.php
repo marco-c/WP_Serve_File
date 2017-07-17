@@ -89,7 +89,7 @@ class WP_Serve_File {
     header('Pragma: cache');
     header('Content-Type: ' . $contentType);
     echo $content;
-    wp_die();
+    die();
   }
 
   public function add_file($name, $generatorFunc) {
