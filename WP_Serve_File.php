@@ -57,8 +57,8 @@ class WP_Serve_File {
     return $file;
   }
 
-  public function serve_file() {
-    $name = $_GET['wpservefile_file'];
+  public function serve_file($name = '') {
+    $name = $name ? $name : $_GET['wpservefile_file'];
 
     $file = get_transient('wpservefile_files_' . $name);
     if (empty($file)) {
