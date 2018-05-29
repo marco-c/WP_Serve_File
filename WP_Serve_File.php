@@ -6,14 +6,27 @@ if (!class_exists('WP_Serve_File')) {
 
 class WP_Serve_File {
   private static $instance;
-  private static $useFS;
+  private static $useFS; 
   private $files = array();
+  private static $upload_dir;
 
-  public function __construct() {
+  public function __construct($dir = null) {
     require_once(ABSPATH . 'wp-admin/includes/file.php');
+    global $wp_filesystem;
 
-    $upload_dir = wp_upload_dir();
-    if (get_filesystem_method(array(), $upload_dir['basedir']) !== 'direct' || !WP_Filesystem(request_filesystem_credentials(admin_url()))) {
+    if (is_string($dir)){
+      self::$upload_dir = wp_upload_dir();
+      self::$upload_dir['basedir'] = trailingslashit(self::$upload_dir['basedir']) . $dir;
+      self::$upload_dir['baseurl'] = trailingslashit(self::$upload_dir['baseurl']) . $dir;
+      mkdir(self::$upload_dir['basedir'],0755,true);
+    }else if(is_array($dir)){
+      self::$upload_dir = $dir;
+      mkdir(self::$upload_dir['basedir'],0755,true);
+    }else{
+      self::$upload_dir = wp_upload_dir();
+    }
+    if (get_filesystem_method(array(), self::$upload_dir['basedir']) !== 'direct' || !WP_Filesystem(request_filesystem_credentials(admin_url()))) {
+
       self::$useFS = false;
 
       add_action('wp_ajax_wpservefile', array($this, 'serve_file'));
@@ -23,11 +36,10 @@ class WP_Serve_File {
     }
   }
 
-  public static function getInstance() {
+  public static function getInstance($dir = null) {
     if (!self::$instance) {
-      self::$instance = new self();
+      self::$instance = new self($dir);
     }
-
     return self::$instance;
   }
 
@@ -45,8 +57,7 @@ class WP_Serve_File {
 
     if (self::$useFS) {
       global $wp_filesystem;
-      $upload_dir = wp_upload_dir();
-      $dir = trailingslashit($upload_dir['basedir']) . 'wpservefile_files/';
+      $dir = trailingslashit(self::$upload_dir['basedir']) . 'wpservefile_files/';
 
       $wp_filesystem->mkdir($dir);
       $wp_filesystem->put_contents($dir . $name, $file['content']);
@@ -57,8 +68,8 @@ class WP_Serve_File {
     return $file;
   }
 
-  public function serve_file($name = '') {
-    $name = $name ? $name : $_GET['wpservefile_file'];
+  public function serve_file() {
+    $name = $_GET['wpservefile_file'];
 
     $file = get_transient('wpservefile_files_' . $name);
     if (empty($file)) {
@@ -89,7 +100,7 @@ class WP_Serve_File {
     header('Pragma: cache');
     header('Content-Type: ' . $contentType);
     echo $content;
-    die();
+    wp_die();
   }
 
   public function add_file($name, $generatorFunc) {
@@ -104,8 +115,7 @@ class WP_Serve_File {
 
   public static function get_relative_to_host_root_url($name) {
     if (self::$useFS) {
-      $upload_dir = wp_upload_dir();
-      return trailingslashit($upload_dir['baseurl']) . 'wpservefile_files/' . $name;
+      return trailingslashit(self::$upload_dir['baseurl']) . 'wpservefile_files/' . $name;
     } else {
       return admin_url('admin-ajax.php', 'relative') . '?action=wpservefile&wpservefile_file=' . $name;
     }
